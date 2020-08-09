@@ -1,1 +1,115 @@
+#include <iostream>
+#include "windows.h";
 
+using namespace std;
+
+int main(char* Argc, int Argv)
+{
+	//setlocale(LC_ALL, "rus");
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
+
+	const int Size = 3;
+	int Cube1[Size][Size], Cube2[Size][Size];
+	bool Check = true;
+	int Choice = rand() % 2;
+	int TurnUser[6] = {};
+	int TurnPC[6] = {};
+	int SumUser = 0, SumPC = 0;
+	char Choose1;
+	char Choose2;
+	int Win = 0, Loose = 0, Draw = 0;
+
+
+	do
+	{
+		cout << "\nПравила игры: Каждый бросает кубик 4 раза. У кого выпало в сумме больше очков - тот выиграл.\n";
+		cout << "Сейчас будет определен игрок, кидающий кубик первым: ";
+
+		if (Choice == 1)
+		{
+			cout << "Первым ходит пользователь!";
+			for (int i = 0; i < 4; i++)
+			{
+				TurnUser[i] = 1 + rand() % 6;
+				cout << "\nНажмите 1, чтобы бросить кубик: ";
+				cin >> Choose1;
+				switch (Choose1)
+				{
+				case '1':				
+					cout << "\nБросок пользователя номер " << i + 1 << ": ";
+					cout << " \n ====\n";
+					cout << " | " << TurnUser[i] << " |\n";
+					cout << " ====";
+					SumUser += TurnUser[i];
+					cout << "\nБросок компьютера номер " << i + 1 << ": ";
+					cout << " \n ====\n";
+					TurnPC[i] = 1 + rand() % 6;
+					cout << " | " << TurnPC[i] << " |\n";
+					cout << " ====";
+					SumPC += TurnPC[i];
+				}
+			}
+		}
+		else
+		{
+			cout << "Первым ходит компьютер";
+			for (int i = 0; i < 4; i++)
+			{
+				TurnUser[i] = 1 + rand() % 6;
+				cout << "\nБросок компьютера номер " << i + 1 << ": ";
+				cout << " \n ====\n";
+				cout << " | " << TurnUser[i] << " |\n";
+				cout << " ====";
+				SumUser += TurnUser[i];
+				cout << "\nБросок пользователя номер " << i + 1 << ": ";
+				cout << " \n ====\n";
+				TurnPC[i] = 1 + rand() % 6;
+				cout << " | " << TurnPC[i] << " |\n";
+				cout << " ====";
+				SumPC += TurnPC[i];
+			}
+		}
+
+		cout << "\n\nСумма очков пользователя: " << SumUser;
+		cout << "\nСумма очков компьютера: " << SumPC;
+
+		if (SumUser > SumPC)
+		{
+			cout << "\nПобедил пользователь! Поздравляем!\n";
+			SumUser = 0;
+			SumPC = 0;
+			Win++;
+		}
+			
+		else if (SumUser < SumPC)
+		{
+			cout << "\n\nПобедил компьютер! Не сдавайся, попробуй еще раз!\n";
+			SumUser = 0;
+			SumPC = 0;
+			Loose++;
+		}
+			
+		else
+		{
+			cout << "\nПобедила дружба!\n";
+			SumUser = 0;
+			SumPC = 0;
+			Draw++;
+		}
+
+		cout << "Счёт: \n";
+		cout << "Побед: " << Win << "\nПоражений: " << Loose << "\nНичей: " << Draw;
+		cout << "\nЧтобы начать игру заново, нажмите 1. Если хотите окончить игру, нажмите 2: ";
+		cin >> Choose2;
+		switch (Choose2)
+		{
+		case '2':
+			Check = false;
+		}
+	} while (Check == true);
+
+	return 0;
+}
+
+	
