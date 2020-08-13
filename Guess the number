@@ -1,1 +1,71 @@
+#include <iostream>
+#include "windows.h"
+
+using namespace std;
+
+int main(int argc, char* argv[])
+{
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
+
+	bool Again = true;
+	int Number;
+	int Answer1;
+	char Answer2;
+	int Try = 3;
+	int WinPC = 0, WinUser = 0;
+	Number = 1 + rand() % 10;
+
+	do
+	{
+		cout << "\nПравила игры: Компьтер загадывает число от 1 до 10. Вы должны угадать это число за 3 попытки.";
+		for (int i = 1; i <= 3; i++)
+		{
+			cout << "\n\nПопытка номер " << i << ":";
+			cout << "\nВведите число и нажмите <<Enter>>: ";
+			cin >> Answer1;
+			if (Answer1 < 1 || Answer1 > 10)
+				cout << "\nЧисло должно находиться в диапазоне от 1 до 10!";
+			if (Answer1 == Number)
+			{
+				cout << "\nПоздравляем! Вы угадали, компьютер загадал число " << Number;
+				break;
+			}
+			else
+			{
+				Try--;
+				cout << "\nКомпьютер загадал другое число. Попыток осталось: " << Try;
+			}
+		}
+
+		if (Answer1 != Number)
+		{
+			cout << "\nВы не угадали число. Правильный ответ: " << Number;
+			WinPC++;
+		}
+		else WinUser++;
+
+		cout << "\n\nСчет: " << endl << "Игрок: " << WinUser << endl << "Компьютер: " << WinPC;
+		cout << "\nЧтобы начать игру заново, введите <y>. Чтобы закончить игру, введите <n> и нажмите <<Enter>>\n(Примечание: Каждую новую игру компьютер загадывает другое число): ";
+		cin >> Answer2;
+
+		switch (Answer2)
+		{
+		case 'Y':
+		case 'y':
+			Number = 1 + rand() % 10;
+			Try = 3;
+			break;
+		case 'N':
+		case 'n':
+			Again = false;
+			break;
+		}
+
+	} while (Again);
+
+	return 0;
+}
+
+
 
