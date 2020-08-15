@@ -1,0 +1,226 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include <iostream>
+#include "windows.h"
+#include "conio.h"
+
+using namespace std;
+
+//Объявление и инициализация необходимых переменных, в т.ч. массивов и перечисления
+bool Game = false;
+const int Width = 26, Height = 26;
+int PlayerX = Width / 2-1, PlayerY = Height / 2-1;
+int FoodX = rand() % Width, FoodY = rand() % Height;
+int Input;
+int Score = 0;
+int Velocity;
+int TailX[Width * Height], TailY[Width * Height];
+int Tail;
+
+enum Dir
+{
+	Up,
+	Left,
+	Down,
+	Right
+};
+
+Dir dir;
+
+//Объявление функций
+void Map();
+void Move();
+void Logic();
+void TheEnd();
+
+//Главная функция
+int main(int argc, char* argv[])
+{
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
+
+	//Интересная функция, проверяющая раскладку клавиатуры
+	HKL hk = GetKeyboardLayout(0);
+	int lang = LOWORD(hk);
+	if (lang == 1049)
+	{
+		cout << "Внимание: Раскладка вашей клавиатуры - русская. Для правильной работы игры следует переключить раскладку на английскую.\n\n";
+	}
+
+	//Начало игры
+	cout << "Чтобы начать игру, нажмите (1): ";
+	cin >> Input;
+
+	switch (Input)
+	{
+	case 1:
+		Game = true;
+		system("cls");
+	}
+
+	while (Game)
+	{
+		Map();
+		Move();
+		Logic();
+	}
+
+
+	return 0;
+}
+
+//Отрисовка карты, змейки, еды, хвоста
+void Map()
+{
+	//Замена system("cls") - для устранения мерцания при обновлении карты
+	HANDLE hd = GetStdHandle(STD_OUTPUT_HANDLE);
+	COORD cd;
+	cd.X = 0;
+	cd.Y = 0;
+	SetConsoleCursorPosition(hd, cd);
+	Sleep(200);
+	//cout << "\nВыберите скорость игры: (1)Easy (2)Medium (3)Hard: ";
+	//cin >> Velocity;
+
+	for (int i = 0; i <= Width/2 + 1; i++)
+	{
+		cout << "# ";
+	}
+	cout << " Счёт: " << Score;
+
+	cout << endl;
+
+	for (int i = 0; i < Height; i++)
+	{
+		for (int j = 0; j <= Width; j++)
+		{
+			if (j == 0 || j == Width)
+				cout << "# ";
+
+			if ((i == PlayerY) && (j == PlayerX))
+			{
+				cout << "О";
+			}
+
+			else if ((i == FoodY) && (j == FoodX))
+			{
+				cout << "А";
+			}
+
+			else
+			{
+				bool Check = false;
+				for (int k = 0; k < Tail; k++)
+				{
+					if (TailX[k] == j && TailY[k] == i)
+					{
+						Check = true;
+						cout << "о";
+					}
+
+					if (PlayerX == TailX[k] && PlayerY == TailY[k])
+						TheEnd();
+				}
+					
+				if(!Check)
+					cout << " ";
+			}
+		}
+		cout << endl;
+	}
+
+	for (int i = 0; i <= Width / 2 + 1; i++)
+	{
+		cout << "# ";
+	}
+}
+
+//Движение змейки
+void Move()
+{
+	if (_kbhit())
+	{
+		switch (_getch())
+		{
+		case 'w': dir = Up;
+			break;
+		case 'a': dir = Left;
+			break;
+		case 's': dir = Down;
+			break;
+		case 'd': dir = Right;
+			break;
+		case 'n': Game = false;
+		}
+	}
+}
+
+//Логика игры
+void Logic()
+{
+	//Координаты хвоста
+	int PrevX, PrevY, PrevXX, PrevYY;
+	PrevX = TailX[0];
+	PrevY = TailY[0];
+	TailX[0] = PlayerX;
+	TailY[0] = PlayerY;
+
+	for (int i = 1; i < Tail; i++)
+	{
+		PrevXX = TailX[i];
+		PrevYY = TailY[i];
+		//swap(PrevX, PrevXX);
+		//swap(PrevY, PrevYY);
+		TailX[i] = PrevX;
+		TailY[i] = PrevY;
+		PrevX = PrevXX;
+		PrevY = PrevYY;
+	}
+
+	//Соответствие нажатой клавишы действию
+	switch (dir)
+	{
+	case Up: PlayerY--;
+		break;
+	case Left: PlayerX--;
+		break;
+	case Down: PlayerY++;
+		break;
+	case Right: PlayerX++;
+		break;
+	}
+
+	//Если съел еду
+	if (PlayerX == FoodX && PlayerY == FoodY)
+	{
+		Score+=5;
+		Tail++;
+		FoodX = rand() % Width, FoodY = rand() % Height;
+	}
+
+	if (PlayerX == Height || PlayerY == Width || PlayerX == -2 || PlayerY == -2)
+		TheEnd();
+}
+
+//Окончание игры
+void TheEnd()
+{
+		Game = false;
+		Sleep(500);
+		cout << "\n Вы проиграли. Начать игру заново (1). Закончить игру (2): ";
+		cin >> Input;
+		switch (Input)
+		{
+		case 1:
+			Game = true;
+			Score = 0;
+			PlayerX = Width / 2;
+			PlayerY = Height / 2;
+			FoodX = rand() % Width, FoodY = rand() % Height;
+			Tail = 0;
+			system("cls");
+		}
+		getchar();
+}
+
+
+
