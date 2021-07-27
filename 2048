@@ -1,0 +1,284 @@
+#include <iostream>
+#include <vector>
+#include <conio.h>
+
+class game
+{
+public:
+    game() {}
+    game(int n):size(n)
+    {
+        game_ = true;
+        is_zero = false;
+
+        field = new int* [size];
+        for (int i(0); i < size; ++i)
+        {
+            field[i] = new int[size];
+        }
+        for (int i(0); i < size; ++i)
+        {
+            for (int j(0); j < size; ++j)
+            {
+                field[i][j] = 0;
+            }
+        }
+
+        int k = rand() % size;
+        int l = rand() % size;
+        field[k][l] = 2;
+        while (1)
+        {
+            k = rand() % size;
+            l = rand() % size;
+            if (field[k][l] == 0) break;
+        }
+        field[k][l] = 2;
+
+        not_null.reserve(size);
+        for (std::pair<int, int> p : not_null)
+        {
+            p = std::pair<int, int>(0, 0);
+        }
+    }
+    ~game() 
+    {
+        for (int i(0); i < size; ++i)
+        {
+            delete[] field[i];
+        }
+        delete[] field;
+        not_null.clear();
+    }
+    void fill_field();
+    void logic(char ch);
+    void input();
+    void update(char ch);
+    void fill_not_null();
+    void show();
+    bool game_over() 
+    {
+        std::vector<int> v;
+        is_zero = false;
+        bool is_turn = false;
+        for (int i(0); i < size; ++i)
+        {
+            for (int j(0); j < size; ++j)
+            {
+                if (field[i][j]) is_zero = false;
+                else
+                {
+                    is_zero = true;
+                    break;
+                }
+                if (i + 1 < size && field[i][j] == field[i + 1][j] && field[i][j] && field[i + 1][j]
+                    || field[i][j] == field[i][j + 1] && field[i][j] && field[i][j + 1]
+                    || 1
+                    || 1) is_turn = true;
+            }
+        }
+        for (int i(0); i < size; ++i)
+        {
+            for (int j(0); j < size; ++j)
+            {
+                if (i+1 < size && field[i][j] && field[i+1][j] && field[i][j] == field[i+1][j]) v.push_back(1);
+                else if(!is_zero) v.push_back(0);
+            }
+        }
+        for (int i : v) 
+        {
+            if (i == 1)
+            {
+                game_ = true;
+                break;
+            }
+            else game_ = false;
+        }
+        v.clear();
+        return game_;
+    }
+private:
+    bool is_zero;
+    bool game_;
+    int** field;
+    int size;
+    std::vector<std::pair<int, int>> not_null;
+};
+
+void game::fill_field()
+{
+    /*int k = 0, l = 0, i = 0;
+    while (1)
+    {
+        i++;
+        k = rand() % size;
+        l = rand() % size;
+        if (field[k][l] == 0)
+        {
+            field[k][l] = 2;
+            break;
+        }
+        if (i == size*2) break;
+    }*/
+
+    show();
+}
+
+void game::input()
+{
+    char ch = ' ';
+    if (_kbhit())
+    {
+        switch (ch = _getch())
+        {
+        case 'w':
+            ch = 'w';
+            update(ch);
+            break;
+        case 'a':
+            ch = 'a';
+            update(ch);
+            break;
+        case 's':
+            ch = 's';
+            update(ch);
+
+            break;
+        case 'd':
+            ch = 'd';
+            update(ch);
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+void game::update(char ch)
+{
+    system("cls");
+    for (int i(0); i < size; ++i)
+    {
+        for (int j(0); j < size; ++j)
+        {
+            if (ch == 'w')
+            {
+                if (i + 1 < size)
+                {
+                    for (int k = 1; k < size; ++k)
+                    {
+                        if (i + k < size)
+                        {
+                            if (!field[i+k][j]) continue;
+                            if (field[i][j] == field[i + k][j] && field[i][j] && field[i + k][j])
+                            {
+                                field[i][j] += field[i + k][j];
+                                field[i + k][j] = 0;
+                            }
+                            else
+                            {
+                                field[i][j] = field[i + k][j];
+                                field[i + k][j] = 0;
+                            }
+                        }
+                    }
+                }
+            }
+            else if (ch == 'a')
+            { 
+                if (j + 1 < size)
+                {
+                    for (int k = 1; k < size; ++k)
+                    {
+                        if (j + k < size)
+                        {
+                            if (!field[i][j + k]) continue;
+                            else if (field[i][j] == field[i][j + k] )
+                            {
+                                field[i][j] += field[i][j + k];
+                                field[i][j + k] = 0;
+                            }
+                            else
+                            {
+                                field[i][j] = field[i][j + k];
+                                field[i][j + k] = 0;
+                            }
+                        }
+                    }
+                }
+            }
+            else if (ch == 's')
+            {
+                if (i - 1 >= 0)
+                {
+                    if (field[i][j] == field[i - 1][j] && field[i][j] && field[i - 1][j])
+                    {
+                        field[i][j] += field[i - 1][j];
+                        field[i - 1][j] = 0;
+                    }             
+                    if (field[i - 1][j])
+                    {
+                        field[i][j] = field[i - 1][j];
+                        field[i - 1][j] = 0;
+                    }
+                }
+            }
+            else if (ch == 'd')
+            {
+                if (j - 1 >= 0)
+                {
+                    if (field[i][j] == field[i][j - 1] && field[i][j] && field[i][j - 1])
+                    {
+                        field[i][j] += field[i][j - 1];
+                        field[i][j - 1] = 0;
+                    }
+                    if (field[i][j - 1])
+                    {
+                        field[i][j] = field[i][j - 1];
+                        field[i][j - 1] = 0;
+                    }
+                }
+            }
+        }
+    }
+    fill_field();
+}
+
+void game::fill_not_null()
+{
+    for (int i(0); i < size; ++i)
+    {
+        for (int j(0); j < size; ++j)
+        {
+            if (!field[i][j]) not_null.push_back(std::pair<int, int>(i, j));
+        }
+    }
+}
+
+void game::show()
+{
+    for (int i(0); i < size; ++i)
+    {
+        for (int j(0); j < size; ++j)
+        {
+            std::cout << " [ " << field[i][j] << " ] ";
+        }
+        std::cout << "\n";
+    }
+}
+
+
+int main(int argc, char** argv)
+{
+    //srand(time(NULL));
+    int n = 4;
+    game g(n);
+    g.show();
+    while (g.game_over())
+    {
+        g.input();
+    }
+    if (!g.game_over()) std::cout << "You loose :(\n";
+            
+    return 0;
+}
