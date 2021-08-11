@@ -101,6 +101,7 @@ public:
         v.clear();*/
         return game_;
     }
+    void check_func();
 private:
     bool is_zero;
     bool game_;
@@ -111,7 +112,7 @@ private:
 
 void game::fill_field()
 {
-    /*int k = 0, l = 0, i = 0;
+    int k = 0, l = 0, i = 0;
     while (1)
     {
         i++;
@@ -123,9 +124,14 @@ void game::fill_field()
             break;
         }
         if (i == size*2) break;
-    }*/
+    }
 
     show();
+}
+
+void game::check_func()
+{
+    
 }
 
 void game::input()
@@ -146,7 +152,6 @@ void game::input()
         case 's':
             ch = 's';
             update(ch);
-
             break;
         case 'd':
             ch = 'd';
@@ -172,13 +177,15 @@ void game::update(char ch)
         {
                 for (int k = 1; k < size; ++k)
                 {
-                    int l = 0, r = 0, left1 = 0, left2 = 0;
+                    int l = 0, r = 0, left1 = 0, left2 = 0, right1 = 0, right2 = 0;
                     if (ch == 'w')
                     {
                         l = i;
                         r = j;
                         left1 = l + k;
                         left2 = l + 1;
+                        right1 = r;
+                        right2 = r;
                     }
                     else if (ch == 's')
                     {
@@ -186,148 +193,86 @@ void game::update(char ch)
                         r = j;
                         left1 = l - k;
                         left2 = l - 1;
+                        right1 = r;
+                        right2 = r;
+                    }
+                    else if (ch == 'a')
+                    {
+                        l = i;
+                        r = j;
+                        right1 = r + k;
+                        right2 = r + 1;
+                        left1 = l;
+                        left2 = l;
+                    }
+                    else if (ch == 'd')
+                    {
+                        l = i;
+                        r = j;
+                        right1 = r - k;
+                        right2 = r - 1;
+                        left1 = l;
+                        left2 = l;
                     }
                     if (l == size - 1 && !cntw)
                     {
                         i = 0;
+                        j = 0;
                         l = 0;
+                        r = 0;
                         cntw = 1;
                         if (ch == 'w')
                         {
                             left1 = l + k;
                             left2 = l + 1;
+                            right1 = r;
+                            right2 = r;
                         }
                         else if (ch == 's')
                         {
                             left1 = l - k;
                             left2 = l - 1;
+                            right1 = r;
+                            right2 = r;
+                        }
+                        else if (ch == 'a')
+                        {
+                            right1 = r + k;
+                            right2 = r + 1;
+                            left1 = l;
+                            left2 = l;
+                        }
+                        else if (ch == 'd')
+                        {
+                            right1 = r - k;
+                            right2 = r - 1;
+                            left1 = l;
+                            left2 = l;
                         }
                         //std::cout << "\nSWAP\n";
                     }
-                    //std::cout << "\n" << l << " + " << k << " = " << left1 << "\n";
-                    if (left1 < size && left1 >=0 && l >= 0)
+                    //std::cout << "\n" << l << " " << k << " = " << left1 << "\n";
+                    if (left1 < size && left1 >=0 && right1 < size && right1 >= 0)
                     {
                         //std::cout << "\n" << i << " " << j << " " << k << "\n";
                         if (field[l][r] && !field[left2][r]) continue;
-                        else if (field[l][j] && field[left1][r] && field[l][r] == field[left1][r] && field[l][r] == field[left2][r])
+                        else if (field[l][r] && field[left1][right1] && field[l][r] == field[left1][right1]
+                            && field[l][r] == field[left2][right2])
                         {
-                            field[l][r] += field[left1][r];
-                            field[left1][r] = 0;
+                            field[l][r] += field[left1][right1];
+                            field[left1][right1] = 0;
                         }
-                        else if (!field[l][r] && field[left1][r])
+                        else if (!field[l][r] && field[left1][right1])
                         {
-                            field[l][r] = field[left1][r];
-                            field[left1][r] = 0;
+                            field[l][r] = field[left1][right1];
+                            field[left1][right1] = 0;
                         }
                     }
-
-
                 }
         }
     }
 
 
-    /*for (int i(0); i < size; ++i)
-    {
-        for (int j(0); j < size; ++j)
-        {
-            if (ch == 'w')
-            {
-                for (int k = 1; k < size; ++k)
-                {
-                    if (i == size - 1 && !cntw)
-                    {
-                        i = 0;
-                        cntw = 1;
-                    }
-                    if (i + k < size)
-                    {
-                        if (field[i][j] && !field[i + k][j]) continue;
-                        else if (field[i][j] && field[i + k][j] && field[i][j] == field[i + k][j] && field[i][j] == field[i+1][j])
-                        {
-                            field[i][j] += field[i + k][j];
-                            field[i + k][j] = 0;
-                        }
-                        else if(!field[i][j] && field[i+k][j])
-                        {
-                            field[i][j] = field[i + k][j];
-                            field[i + k][j] = 0;
-                        }
-                    }
-                }
-            }
-            else if (ch == 'a')
-            {
-                if (j + 1 < size)
-                {
-                    for (int k = 1; k < size; ++k)
-                    {
-                        if (j + k < size)
-                        {
-                            if (!field[i][j + k]) continue;
-                            else if (field[i][j] == field[i][j + k])
-                            {
-                                field[i][j] += field[i][j + k];
-                                field[i][j + k] = 0;
-                            }
-                            else
-                            {
-                                field[i][j] = field[i][j + k];
-                                field[i][j + k] = 0;
-                            }
-                        }
-                    }
-                }
-            }
-            else if (ch == 's')
-            {
-                    for (int k = 1; k < size; ++k)
-                    {
-                        if (i == size -1 && !cnts)
-                        {
-                            i = 0;
-                            cnts = 1;
-                        }
-                        if (size - 1 - i - k >= 0)
-                        {
-                            if (size - 1 - i >= 0 && size - i - 2 < size)
-                            {
-                                if (field[size - 1 - i][j] && !field[size - 1 - i - k][j]) continue;
-                                else if (field[size - 1 - i][j] && field[size - 1 - i - k][j] && field[size - 1 - i][j] == field[size - 1 - i - k][j]
-                                    && field[size-1-i][j] == field[size-2-i][j])
-                                {
-                                    field[size - 1 - i][j] += field[size - 1 - i - k][j];
-                                    field[size - 1 - i - k][j] = 0;
-                                }
-
-                                else if (!field[size - 1 - i][j] && field[size - 1 - i - k][j])
-                                {
-                                    field[size - 1 - i][j] = field[size - 1 - i - k][j];
-                                    field[size - 1 - i - k][j] = 0;
-                                }
-
-                            }
-                        }
-                    }                   
-            }
-            else if (ch == 'd')
-            {
-                if (j - 1 >= 0)
-                {
-                    if (field[i][j] == field[i][j - 1] && field[i][j] && field[i][j - 1])
-                    {
-                        field[i][j] += field[i][j - 1];
-                        field[i][j - 1] = 0;
-                    }
-                    if (field[i][j - 1])
-                    {
-                        field[i][j] = field[i][j - 1];
-                        field[i][j - 1] = 0;
-                    }
-                }
-            }
-        }
-    }*/
     fill_field();
 }
 
@@ -371,71 +316,3 @@ int main(int argc, char** argv)
 }
 
 
-
-
-
-
-
-
-
-
-
-/*std::string func(std::string s);
-
-int main(int argc, char* argv[])
-{
-    std::string s;
-    s = "C:\\Users\\eemee\\Desktop\\Instagram\\heg.jpg";
-    std::cout << func(s);
-
-    return 0;
-}
-
-std::string func(std::string s)
-{
-    std::string str;
-    std::string str2;
-    int k = 1;
-    for (int i(s.size()); i > 0; --i)
-    {
-        if (s[i] == '.') 
-        { 
-            while(s[i-k]!='\\')
-            {
-                str2 = s[i - k];
-                str.insert(0, str2);
-                k++;
-            }
-        }
-    }
-    //without cycles, conditional var, stl 2048 n*n
-    return str;
-}*/
-
-
-/*void func(int* arr, int size, int i)
-{
-    int sum = 0;
-    if(i+1 < size)
-        int sum = arr[i] + arr[i + 1];
-    if (sum % 3 == 0) std::cout << sum;
-    else func(arr, size, i++);
-
-}*/
-
-
-/*
-const int size = 10;
-int arr[size] = {};
-for (int* p = arr; p < arr + size; ++p)
-{
-    *p = rand()%10 + 1;
-}
-for (int* p = arr; p < arr + size; ++p)
-{
-    std::cout << *p << " ";
-}
-std::cout << "\n";
-int i = 0;
-func(arr, size, i);
-*/
