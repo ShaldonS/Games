@@ -34,10 +34,10 @@ public:
             if (field[k][l] == 0) break;
         }
         //field[k][l] = 2;
-        field[3][3] = 2;
-        field[0][1] = 2;
-        field[0][2] = 0;
-        field[0][3] = 2;
+        field[0][0] = 2;
+        field[1][0] = 2;
+        field[2][0] = 4;
+        field[3][0] = 8;
 
     }
     ~game() 
@@ -93,7 +93,6 @@ public:
         v.clear();*/
         return game_;
     }
-    void func(char ch);
 private:
     bool is_zero;
     bool game_;
@@ -149,17 +148,13 @@ void game::input()
     }
 }
 
-void game::func(char ch)
-{
-
-}
-
 void game::update(char ch)
 {
     system("cls");
     int cntw = 0;
     int tmp_k = 0;
     bool do_tmp_k = false;
+    bool do_again = true;
 
     for (int i(0); i < size; ++i)
     {
@@ -170,6 +165,7 @@ void game::update(char ch)
                     if (do_tmp_k)
                     {
                         k = tmp_k;
+                        do_tmp_k = false;
                     }
                     int l = 0, r = 0, left1 = 0, left2 = 0, right1 = 0, right2 = 0;
                     if (ch == 'w')
@@ -202,7 +198,7 @@ void game::update(char ch)
                     else if (ch == 'd')
                     {
                         l = i;
-                        r = j;
+                        r = size - 1 - j;
                         right1 = r - k;
                         right2 = r - 1;
                         left1 = l;
@@ -210,36 +206,37 @@ void game::update(char ch)
                     }
 
                     //std::cout << "\n" << l << " " << r << " " << left1 << " " << left2 << "\n";
-                    std::cout << "\n" << l << " " << r << " " << left1 << " " << right1 << " " << left2 << " " << right2 << " k: " << k << "\n";
+                    //std::cout << "\n" << l << " " << r << " " << left1 << " " << right1 << " " << left2 << " " << right2 << " k: " << k << "\n";
                     if (left1 < size && left1 >=0 && right1 < size && right1 >= 0 && left2 >= 0 && left2 < size && right1 < size && right1 >= 0)
                     {                     
                         //std::cout << "\n" << i << " " << j << " " << k << "\n";
-                        if (field[l][r] && field[left1][right1] && field[l][r] == field[left1][right1] && field[l][r] == field[left2][right2])
+                        if (field[l][r] && field[left2][right2] && field[l][r] == field[left2][right2])
                         {
+                            do_again = true;
                             //std::cout << "\n" << l << " " << r << "\n";
-                            field[l][r] += field[left1][right1];
-                            field[left1][right1] = 0;
+                            field[l][r] += field[left2][right2];
+                            field[left2][right2] = 0;
                         }
-                        else if (field[l][r] && !field[left2][right2]) continue;
                         else if (!field[l][r] && field[left1][right1])
                         {
                             field[l][r] = field[left1][right1];
                             field[left1][right1] = 0;
                         }
-                    }
+                    }               
                     //std::cout << "\n";
                     //show();
                     //std::cout << "\n";
 
-                    if (i == size - 1 && j == size - 1 && !cntw)
+                    if (i == size - 1 && j == size - 1 && do_again)
                     {
                         i = 0;
                         j = 0;
                         r = j;
                         tmp_k = 1;
                         do_tmp_k = true;
-                        cntw = 1;
-                        //std::cout << "\nSWAP" << k << "\n ";
+                        do_again = false;
+                        cntw = 1;                      
+                        //std::cout << "\nSWAP" << "\n ";
                     }
                     else do_tmp_k = false;
                 }
@@ -274,4 +271,5 @@ int main(int argc, char** argv)
             
     return 0;
 }
+
 
