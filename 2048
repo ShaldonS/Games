@@ -34,16 +34,11 @@ public:
             if (field[k][l] == 0) break;
         }
         //field[k][l] = 2;
-        field[0][0] = 2;
-        field[1][0] = 0;
-        field[2][0] = 0;
-        field[3][0] = 2;
+        field[3][3] = 2;
+        field[0][1] = 0;
+        field[0][2] = 0;
+        field[0][3] = 2;
 
-        not_null.reserve(size);
-        for (std::pair<int, int> p : not_null)
-        {
-            p = std::pair<int, int>(0, 0);
-        }
     }
     ~game() 
     {
@@ -52,13 +47,10 @@ public:
             delete[] field[i];
         }
         delete[] field;
-        not_null.clear();
     }
     void fill_field();
-    void logic(char ch);
     void input();
     void update(char ch);
-    void fill_not_null();
     void show();
     bool game_over() 
     {
@@ -101,18 +93,16 @@ public:
         v.clear();*/
         return game_;
     }
-    void check_func();
 private:
     bool is_zero;
     bool game_;
     int** field;
     int size;
-    std::vector<std::pair<int, int>> not_null;
 };
 
 void game::fill_field()
 {
-    int k = 0, l = 0, i = 0;
+    /*int k = 0, l = 0, i = 0;
     while (1)
     {
         i++;
@@ -124,14 +114,9 @@ void game::fill_field()
             break;
         }
         if (i == size*2) break;
-    }
+    }*/
 
     show();
-}
-
-void game::check_func()
-{
-    
 }
 
 void game::input()
@@ -214,77 +199,32 @@ void game::update(char ch)
                         left1 = l;
                         left2 = l;
                     }
-                    if (l == size - 1 && !cntw)
+                    
+                    //std::cout << "\n" << l << " " << r << " " << left1 << " " << left2 << "\n";
+                    if (left1 < size && left1 >=0 && right1 < size && right1 >= 0 && left2 >= 0 && left2 < size)
                     {
-                        i = 0;
-                        j = 0;
-                        l = 0;
-                        r = 0;
-                        cntw = 1;
-                        if (ch == 'w')
-                        {
-                            left1 = l + k;
-                            left2 = l + 1;
-                            right1 = r;
-                            right2 = r;
-                        }
-                        else if (ch == 's')
-                        {
-                            left1 = l - k;
-                            left2 = l - 1;
-                            right1 = r;
-                            right2 = r;
-                        }
-                        else if (ch == 'a')
-                        {
-                            right1 = r + k;
-                            right2 = r + 1;
-                            left1 = l;
-                            left2 = l;
-                        }
-                        else if (ch == 'd')
-                        {
-                            right1 = r - k;
-                            right2 = r - 1;
-                            left1 = l;
-                            left2 = l;
-                        }
-                        //std::cout << "\nSWAP\n";
-                    }
-                    //std::cout << "\n" << l << " " << k << " = " << left1 << "\n";
-                    if (left1 < size && left1 >=0 && right1 < size && right1 >= 0)
-                    {
+                        //std::cout << "\n" << l << " " << r << " " << left1 << " " << right1 << " " <<  left2 << " " << right2 << "\n";
                         //std::cout << "\n" << i << " " << j << " " << k << "\n";
-                        if (field[l][r] && !field[left2][r]) continue;
-                        else if (field[l][r] && field[left1][right1] && field[l][r] == field[left1][right1]
-                            && field[l][r] == field[left2][right2])
+                        if (field[l][r] && field[left1][right1] && field[l][r] == field[left1][right1] && field[l][r] == field[left2][right2])
                         {
+                            //std::cout << "\n" << l << " " << r << "\n";
                             field[l][r] += field[left1][right1];
                             field[left1][right1] = 0;
                         }
+                        else if (field[l][r] && !field[left2][right2]) continue;
                         else if (!field[l][r] && field[left1][right1])
                         {
                             field[l][r] = field[left1][right1];
                             field[left1][right1] = 0;
                         }
                     }
+                    //std::cout << "\n";
+                    //show();
+                    //std::cout << "\n";
                 }
         }
     }
-
-
     fill_field();
-}
-
-void game::fill_not_null()
-{
-    for (int i(0); i < size; ++i)
-    {
-        for (int j(0); j < size; ++j)
-        {
-            if (!field[i][j]) not_null.push_back(std::pair<int, int>(i, j));
-        }
-    }
 }
 
 void game::show()
@@ -298,7 +238,6 @@ void game::show()
         std::cout << "\n";
     }
 }
-
 
 int main(int argc, char** argv)
 {
